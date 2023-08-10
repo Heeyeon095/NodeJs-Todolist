@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 var path = require('path');
 
+app.set('view engine', 'ejs');
+
 // mongodb 연결
 const MongoClient = require('mongodb').MongoClient;
 
@@ -11,12 +13,6 @@ MongoClient.connect('mongodb+srv://ellen095:dlgmldus1@todo.x76qux6.mongodb.net/?
 
   // Todolist라는 database에 연결
   db = client.db('Todolist');
-
-  // 데이터 저장 형식
-  // post : database 만들때 만든 collection 이름
-  db.collection('post').insertOne({name : 'hee', age : 24}, (error, result) => {
-    console.log('finish!');
-  });
   
   // 서버띄우는 코드 여기로 옮기기
   app.listen(3000, function () {
@@ -31,6 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'css')));
 
+
+// get
+
 app.get('/', function (req, res, next) {
   res.sendFile(__dirname + '/index.html');
 });
@@ -39,8 +38,28 @@ app.get('/write', function (req, res, next) {
   res.sendFile(__dirname + '/write.html');
 });
 
-app.post('/add', (req, res, next) => {
-  res.send('hi');
-  console.log(req.body.todo);
+app.get('/list', (req, res, next) => {
+  res.sendFile(__dirname + '/list.ejs', {
+    title: title,
+  });
 });
 
+
+
+
+// post
+
+app.post('/add', (req, res, next) => {
+  
+  let todo = req.body.todo;
+  let date = req.body.date;
+
+  // 데이터 저장 형식
+  // post : database 만들때 만든 collection 이름
+  db.collection('post').insertOne({ todo: todo, date: date }, (error, result) => {
+    console.log('sucessful saved!');
+  });
+
+  res.redirect('/');
+
+});

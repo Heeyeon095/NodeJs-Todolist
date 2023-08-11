@@ -39,9 +39,7 @@ app.get('/write', function (req, res, next) {
 });
 
 app.get('/list', (req, res, next) => {
-  res.sendFile(__dirname + '/list.ejs', {
-    title: title,
-  });
+  res.render('list.ejs');
 });
 
 
@@ -57,7 +55,11 @@ app.post('/add', (req, res, next) => {
   // 데이터 저장 형식
   // post : database 만들때 만든 collection 이름
   db.collection('post').insertOne({ todo: todo, date: date }, (error, result) => {
-    console.log('sucessful saved!');
+    if (error) {
+      alert(error);
+    } else {
+      console.log('sucessful saved!');
+    }
   });
 
   res.redirect('/');

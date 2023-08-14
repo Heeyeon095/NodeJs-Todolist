@@ -41,11 +41,16 @@ app.get('/write', function (req, res, next) {
 app.get('/list', (req, res, next) => {
   // db에 저장된 post라는 collection 안의 모든 데이터를 꺼냄
   db.collection('post').find().toArray((error, result) => { //배열로
-    console.log(result);
     res.render('list.ejs', {posts : result}); // 데이터를 꺼낸 함수 안에 위치해야 변수가 값을 가져올 수 있음
   });
   
 });
+
+app.get('/detail/:id', (req, res, next) => {
+  db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => { // params - 파라미터 중 id 가져옴
+    res.render('detail.ejs', {data: result});
+  })
+})
 
 // post
 
@@ -81,4 +86,15 @@ app.post('/add', (req, res, next) => {
   });
 
   res.redirect('/');
+});
+
+
+
+// delete
+
+app.delete('/delete', (req, res, next) => {
+  req.body._id = parseInt(req.body._id);
+  db.collection('post').deleteOne(req.body, (error, result) => {
+    res.status(200).send(); //200 - 요청 성공 400 - 요청 실패
+  })
 });

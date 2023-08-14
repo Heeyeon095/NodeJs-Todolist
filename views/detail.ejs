@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todolist-detail</title>
+    <link rel='stylesheet' href='/style.css' />
+    <link rel='stylesheet' href='/index.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js'></script>
+  </head>
+  <body>
+    
+  <header>
+
+    <div class="header-title">Todolist</div>
+
+    <nav>
+      <ul class="header-nav">
+        <li class="header-menu"><a href="#">Home</a></li>
+        <li class="header-menu"><a href="#">Write</a></li>
+        <li class="header-menu"><a href="#">etc</a></li>
+      </ul>
+    </nav>
+
+  </header>
+
+  <div class="detail">
+    <p>Todo : <%= data.todo %></p>
+    <p>date : <%= data.date %></p>
+  </div>
+
+  </body>
+  </html>

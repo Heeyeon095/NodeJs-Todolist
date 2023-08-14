@@ -48,3 +48,56 @@ input {
 input:focus {
   outline: none;
 }
+
+/* list */
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+  padding: 30px 50px;
+}
+
+.list-text {
+  display: flex;
+}
+
+.list-text h4 {
+  padding-right: 50px;
+  line-height: 50px;
+  color: #cebfd3;
+}
+
+.list p {
+  margin-bottom: 10px;
+}
+
+.list button {
+  margin-top: 5px;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.list button:hover {
+  background-color: #eee5f0;
+}
+
+/* detail */
+
+.detail {
+  width: 100%;
+  padding: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail p:first-child {
+  width: 80%;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.detail p:last-child {
+  line-height: 60px;
+}

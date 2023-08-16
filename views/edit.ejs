@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todolist-write</title>
-    <link rel="stylesheet" href="/style.css" />
-    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/index.css" />
   </head>
   <body>
     <header>
@@ -14,19 +14,25 @@
 
       <nav>
         <ul class="header-nav">
-          <li class="header-menu"><a href="#">Home</a></li>
-          <li class="header-menu"><a href="#">Write</a></li>
-          <li class="header-menu"><a href="#">etc</a></li>
+          <li class="header-menu"><a href="/">Home</a></li>
+          <li class="header-menu"><a href="/write">Write</a></li>
+          <li class="header-menu"><a href="/list">list</a></li>
         </ul>
       </nav>
     </header>
 
     <div class="write-wrap">
-      <form action="/add" method="post" id="todo-form" name="todo-form">
+      <form action="/edit?_method=put" method="post" id="todo-form" name="todo-form">
+        <!-- method-override 라이브러리를 써야 html에 get post 뿐만 아닌 put과 delete도 함께 쓸 수 있게 됨, method에 직접 입력하는 게 아닌 action뒤에 ?_method=put or delete를 붙여 사용 -->
+
         <label for="todo">할 일</label>
-        <input type="text" name="todo" id="todo" />
+        <input value="<%= post.todo %>" type="text" name="todo" id="todo" />
+
+        <input type="hidden" name="id" value="<%= post._id %>" />
+
         <label for="date">날짜</label>
-        <input type="date" name="date" id="date" />
+        <input type="date" value="<%= post.date %>" name="date" id="date" />
+
         <button type="submit" id="submit">Submit</button>
       </form>
     </div>

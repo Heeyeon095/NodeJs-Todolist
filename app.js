@@ -36,18 +36,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // get
 
 app.get('/', function (req, res, next) {
-  console.log('url', '/_get');
   // res.sendFile(__dirname + 'index.html');
   res.render('index', {});
 });
 
 app.get('/write', function (req, res, next) {
-  console.log('url', '/write_get');
   res.render('write', {});
 });
 
 app.get('/list', (req, res, next) => {
-  console.log('url', '/list_get');
   // db에 저장된 post라는 collection 안의 모든 데이터를 꺼냄
   db.collection('post')
     .find()
@@ -59,7 +56,6 @@ app.get('/list', (req, res, next) => {
 });
 
 app.get('/detail/:id', (req, res, next) => {
-  console.log('url', '/detail_get');
   db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
     // params - 파라미터 중 id 가져옴
     res.render('detail.ejs', { data: result });
@@ -67,7 +63,6 @@ app.get('/detail/:id', (req, res, next) => {
 });
 
 app.get('/edit/:id', (req, res, next) => {
-  console.log('url', '/edit_get');
   db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
     if (error) {
     } else {
@@ -79,7 +74,6 @@ app.get('/edit/:id', (req, res, next) => {
 // post
 
 app.post('/add', (req, res, next) => {
-  console.log('url', '/add_post');
   let todo = req.body.todo;
   let date = req.body.date;
 
@@ -112,7 +106,6 @@ app.post('/add', (req, res, next) => {
 // delete
 
 app.delete('/delete', (req, res, next) => {
-  console.log('url', '/delete_delete');
   req.body._id = parseInt(req.body._id);
   db.collection('post').deleteOne(req.body, (error, result) => {
     res.status(200).send(); //200 - 요청 성공 400 - 요청 실패
@@ -122,8 +115,6 @@ app.delete('/delete', (req, res, next) => {
 // put
 
 app.put('/edit', (req, res, next) => {
-  console.log('url', '/edit_put');
-
   db.collection('post').updateOne(
     { _id: parseInt(req.body.id) },
     { $set: { todo: req.body.todo, date: req.body.date } },

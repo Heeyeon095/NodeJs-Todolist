@@ -2,6 +2,16 @@ const express = require('express');
 const app = express();
 var path = require('path');
 
+// session
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const session = require('express-session');
+
+// middle ware - 웹서버의 요청과 응답 중간에 무언가를 하고 싶을 때 사용
+app.use(session({ secret: '0905', resave: true, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // html form - method에 put, delete 쓸 수 있게 해줌
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
@@ -71,6 +81,23 @@ app.get('/edit/:id', (req, res, next) => {
   });
 });
 
+app.get('/login', (req, res) => {
+  res.render('login.ejs', {user: req.user});
+});
+
+function loginYes(req, res ,next) { // 로그인했는지 검사하는 커스텀 미들웨어
+  if (req.user) {
+    next();
+  } else {
+    res.send('로그인하세여');
+  };
+};
+
+app.get('/mypage', loginYes, (req, res) => {
+  res.render('mypage.ejs');
+});
+
+
 // post
 
 app.post('/add', (req, res, next) => {
@@ -103,6 +130,11 @@ app.post('/add', (req, res, next) => {
   res.redirect('/');
 });
 
+  // 로그인하면 인증해주세요 라는 라이브러리 문법
+  app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
+    res.redirect('/');  
+  });
+
 // delete
 
 app.delete('/delete', (req, res, next) => {
@@ -123,4 +155,34 @@ app.put('/edit', (req, res, next) => {
       res.redirect('/list');
     }
   );
+});
+
+// session login id, pw check
+
+passport.use(new LocalStrategy({
+  usernameField: 'loginId',
+  passwordField: 'loginPw',
+  session: true, // session 만들 것임
+  passReqToCallback: false,
+}, function (입력한아이디, 입력한비번, done) {
+  //console.log(입력한아이디, 입력한비번);
+  db.collection('login').findOne({ id: 입력한아이디 }, function (error, result) {
+    if (error) return done(error);
+
+    if (!result) return done(null, false, { message: '존재하지않는 아이디요' }); // db에 아이디가 없으면
+    if (입력한비번 == result.pw) { // 그 아이디와 비밀번호가 맞는지
+      return done(null, result);
+    } else {
+      return done(null, false, { message: '비번틀렸어요' });
+    }
+  })
+}));
+
+passport.serializeUser(function (user, done) { // user.id라는 정보로 세션 생성, 위의 result를 user로 가져옴
+  done(null, user.id); // 세션 데이터를 만들고 세션의 id 정보를 쿠키로 보냄
+;});
+passport.deserializeUser(function (id, done) { // 세션이 존재한다면 어떤 정보를 가지고 있는지 분석
+  db.collection('login').findOne({ id: id }, function (error, result) { // db에서 위에 있는 user.id로 유저를 찾은 뒤에 유저 정보를 
+    done(null, result); // result라는 이름으로 넣음 -> 마이페이지 같은 곳에서 다른 정보들 출력 가능
+  });
 });

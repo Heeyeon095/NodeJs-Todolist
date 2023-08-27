@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todolist-Login</title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <link rel='stylesheet' href='/css/index.css' />
+  </head>
+  <body>
+    <header>
+      <div class="header-title">Todolist</div>
+
+      <nav>
+        <ul class="header-nav">
+          <li class="header-menu"><a href="/">Home</a></li>
+          <li class="header-menu"><a href="/write">Write</a></li>
+          <li class="header-menu"><a href="/list">list</a></li>
+          <li class="header-menu"><a href="/login">login</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="write-wrap">
+      <form action="/login" method="post" id="login-form" name="login-form">
+        <label for="loginId">Id</label>
+        <input type="text" name="loginId" id="loginId" />
+        <label for="loginPw">Pw</label>
+        <input type="text" name="loginPw" id="loginPw" />
+        <button type="submit" id="submit">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      const form = document.querySelector('form[name=login-form]');
+
+      form.addEventListener('submit', (e) => {
+        if (document.querySelector('#loginId').value == '') {
+          alert('아이디를 작성해주세요.');
+          e.preventDefault();
+          return;
+        } else if (document.querySelector('#loginPw').value == '') {
+          alert('비밀번호를 작성해주세요.');
+          e.preventDefault();
+          return;
+        }
+        form.submit();
+      });
+    </script>
+  </body>
+</html>

@@ -65,6 +65,25 @@ app.get('/list', (req, res, next) => {
     });
 });
 
+app.get('/search', (req, res) => {
+  let search = [
+    {
+      $search: {
+        index: 'todoSearch',
+        text: {
+          query: req.query.value,
+          path: 'todo'  // 제목날짜 둘다 찾고 싶으면 ['todo', 'date'] - 데이터베이스에 저장된 이름 기준
+        }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ];
+  
+  db.collection('post').aggregate(search).toArray((error, result) => {
+    res.render('result.ejs', { posts: result });
+  });
+});
+
 app.get('/detail/:id', (req, res, next) => {
   db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
     // params - 파라미터 중 id 가져옴
@@ -108,7 +127,7 @@ app.post('/add', (req, res, next) => {
   db.collection('counter').findOne({ name: '게시물 갯수' }, (error, result) => {
     let totalPost = result.totalPost;
 
-    // 데이터 저장 형식
+    // 데이터 저장 형식`
     // post : database 만들때 만든 collection 이름
     db.collection('post').insertOne({ _id: totalPost + 1, todo: todo, date: date }, (error, result) => {
       if (error) {
@@ -127,7 +146,7 @@ app.post('/add', (req, res, next) => {
     });
   });
 
-  res.redirect('/');
+  res.redirect('/list');
 });
 
 // 로그인하면 인증해주세요 라는 라이브러리 문법

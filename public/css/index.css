@@ -70,3 +70,84 @@ header {
 #todo-form button:hover {
   background-color: rgb(99, 92, 202);
 }
+
+
+/* list */
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+  padding: 30px 50px;
+}
+
+.list-text {
+  display: flex;
+}
+
+.list-text h4 {
+  padding-right: 50px;
+  line-height: 50px;
+  color: #cebfd3;
+}
+
+.list p {
+  margin-bottom: 10px;
+}
+
+.list button {
+  margin-top: 5px;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.list button:hover {
+  background-color: #eee5f0;
+}
+
+/* detail */
+
+.detail {
+  width: 100%;
+  padding: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail p:first-child {
+  width: 80%;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.detail p:last-child {
+  line-height: 60px;
+}
+
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  border-bottom: 1px solid #ddd;
+}
+
+#search-input {
+  width: 30%;
+  height: 50px;
+  border-radius: 100px 0 0 100px;
+}
+
+#search-btn {
+  height: 50px;
+  width: 70px;
+  border-radius: 0 100px 100px 0;
+  cursor: pointer;
+  background-color: #444;
+  color: #fff;
+  font-size: 14px;
+}
+
+#search-btn:hover {
+  background-color: #6a578d;
+}

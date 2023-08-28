@@ -26,6 +26,11 @@
 
   </header>
 
+  <div class="search-wrap">
+    <input type="text" name="search" id="search-input">
+    <button id="search-btn">검색</button>
+  </div>
+
   <% for(let i = 0; i < posts.length; i++) { %>
     <div class="list">
       <div class="list-text">
@@ -56,6 +61,16 @@
           location.reload();
         }).fail((xhr, textStatus, errorThrown) => {
         });
+      });
+
+      $('#search-btn').click(function () {
+        let val = $('#search-input').val();
+        if (val) {
+          // url 갈아치우는 함수 -> get 요청
+          window.location.replace(`/search?value=${val}`);
+        } else {
+          alert('검색어를 입력하세요.');
+        };
       });
 
     </script>

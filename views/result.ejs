@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todolist-list</title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <link rel='stylesheet' href='/css/index.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js'></script>
+  </head>
+  <body>
+    
+  <header>
+
+    <div class="header-title">Todolist</div>
+
+    <nav>
+      <ul class="header-nav">
+        <li class="header-menu"><a href="/">Home</a></li>
+        <li class="header-menu"><a href="/write">Write</a></li>
+        <li class="header-menu"><a href="/list">list</a></li>
+        <li class="header-menu"><a href="/login">login</a></li>
+        </ul>
+    </nav>
+
+  </header>
+
+  <div class="search-wrap">
+    <input type="text" name="search" id="search-input">
+    <button id="search-btn">검색</button>
+  </div>
+
+  <% for(let i = 0; i < posts.length; i++) { %>
+    <div class="list">
+      <div class="list-text">
+        <h4><%= posts[i]._id %></h4><div>
+          
+          <p><a href="/detail/<%= posts[i]._id %>">할 일 : <%= posts[i].todo %></a></p>
+          <span>날짜 : <%= posts[i].date %></span>
+        </div>
+      </div>
+      <div>
+        <button class="edit"><a href="/edit/<%= posts[i]._id %>">수정</a></button>
+        <button class="delete" data-id="<%= posts[i]._id %>">삭제</button>
+      </div>
+    </div>
+  <% } %>
+
+    <!-- AJAX -->
+    <script>
+
+      $('.delete').click((e) => {
+        let postNum = e.target.dataset.id; // 내가 누른 요소의 데이터에서 id값을 가져오기
+        $.ajax({
+          method: 'DELETE',
+          url: '/delete', //요청할 경로
+          data: {_id: postNum} //요청과 함께 보낼 데이터
+        }).done((result) => { //.done 요청 성공했을 때
+          // page refresh
+          location.reload();
+        }).fail((xhr, textStatus, errorThrown) => {
+        });
+      });
+
+      $('#search-btn').click(function () {
+        let val = $('#search-input').val();
+        if (val) {
+          // url 갈아치우는 함수 -> get 요청
+          window.location.replace(`/search?value=${val}`);
+        } else {
+          alert('검색어를 입력하세요.');
+        };
+      });
+
+    </script>
+
+  </body>
+  </html>

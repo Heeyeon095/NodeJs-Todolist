@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 var path = require('path');
 
+// 환경변수 관리 라이브러리
+require('dotenv').config();
+
 // session
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -23,20 +26,17 @@ app.set('views', path.join(__dirname, 'views'));
 const MongoClient = require('mongodb').MongoClient;
 
 let db;
-MongoClient.connect(
-  'mongodb+srv://ellen095:dlgmldus1@todo.x76qux6.mongodb.net/?retryWrites=true&w=majority',
-  function (error, client) {
-    if (error) return console.log(error);
+MongoClient.connect(process.env.DB_URL, function (error, client) {
+  if (error) return console.log(error);
 
-    // Todolist라는 database에 연결
-    db = client.db('Todolist');
+  // Todolist라는 database에 연결
+  db = client.db('Todolist');
 
-    // 서버띄우는 코드 여기로 옮기기
-    app.listen(3000, function () {
-      console.log('listening on 3000');
-    });
-  }
-);
+  // 서버띄우는 코드 여기로 옮기기
+  app.listen(process.env.PORT, function () {
+    console.log(`listening on ${process.env.PORT}`);
+  });
+});
 
 // post 요청으로 서버에 데이터 전송할 때 쓰임
 app.use(express.urlencoded({ extended: true }));
@@ -82,21 +82,21 @@ app.get('/edit/:id', (req, res, next) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login.ejs', {user: req.user});
+  res.render('login.ejs', { user: req.user });
 });
 
-function loginYes(req, res ,next) { // 로그인했는지 검사하는 커스텀 미들웨어
+function loginYes(req, res, next) {
+  // 로그인했는지 검사하는 커스텀 미들웨어
   if (req.user) {
     next();
   } else {
     res.send('로그인하세여');
-  };
-};
+  }
+}
 
 app.get('/mypage', loginYes, (req, res) => {
   res.render('mypage.ejs');
 });
-
 
 // post
 
@@ -130,10 +130,10 @@ app.post('/add', (req, res, next) => {
   res.redirect('/');
 });
 
-  // 로그인하면 인증해주세요 라는 라이브러리 문법
-  app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
-    res.redirect('/');  
-  });
+// 로그인하면 인증해주세요 라는 라이브러리 문법
+app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
+  res.redirect('/');
+});
 
 // delete
 
@@ -159,30 +159,39 @@ app.put('/edit', (req, res, next) => {
 
 // session login id, pw check
 
-passport.use(new LocalStrategy({
-  usernameField: 'loginId',
-  passwordField: 'loginPw',
-  session: true, // session 만들 것임
-  passReqToCallback: false,
-}, function (입력한아이디, 입력한비번, done) {
-  //console.log(입력한아이디, 입력한비번);
-  db.collection('login').findOne({ id: 입력한아이디 }, function (error, result) {
-    if (error) return done(error);
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'loginId',
+      passwordField: 'loginPw',
+      session: true, // session 만들 것임
+      passReqToCallback: false,
+    },
+    function (입력한아이디, 입력한비번, done) {
+      //console.log(입력한아이디, 입력한비번);
+      db.collection('login').findOne({ id: 입력한아이디 }, function (error, result) {
+        if (error) return done(error);
 
-    if (!result) return done(null, false, { message: '존재하지않는 아이디요' }); // db에 아이디가 없으면
-    if (입력한비번 == result.pw) { // 그 아이디와 비밀번호가 맞는지
-      return done(null, result);
-    } else {
-      return done(null, false, { message: '비번틀렸어요' });
+        if (!result) return done(null, false, { message: '존재하지않는 아이디요' }); // db에 아이디가 없으면
+        if (입력한비번 == result.pw) {
+          // 그 아이디와 비밀번호가 맞는지
+          return done(null, result);
+        } else {
+          return done(null, false, { message: '비번틀렸어요' });
+        }
+      });
     }
-  })
-}));
+  )
+);
 
-passport.serializeUser(function (user, done) { // user.id라는 정보로 세션 생성, 위의 result를 user로 가져옴
+passport.serializeUser(function (user, done) {
+  // user.id라는 정보로 세션 생성, 위의 result를 user로 가져옴
   done(null, user.id); // 세션 데이터를 만들고 세션의 id 정보를 쿠키로 보냄
-;});
-passport.deserializeUser(function (id, done) { // 세션이 존재한다면 어떤 정보를 가지고 있는지 분석
-  db.collection('login').findOne({ id: id }, function (error, result) { // db에서 위에 있는 user.id로 유저를 찾은 뒤에 유저 정보를 
+});
+passport.deserializeUser(function (id, done) {
+  // 세션이 존재한다면 어떤 정보를 가지고 있는지 분석
+  db.collection('login').findOne({ id: id }, function (error, result) {
+    // db에서 위에 있는 user.id로 유저를 찾은 뒤에 유저 정보를
     done(null, result); // result라는 이름으로 넣음 -> 마이페이지 같은 곳에서 다른 정보들 출력 가능
   });
 });

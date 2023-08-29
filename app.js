@@ -38,6 +38,11 @@ MongoClient.connect(process.env.DB_URL, function (error, client) {
   });
 });
 
+
+// app.use('/', require('./routes/index.js')); // ./ 써서 경로 표시 국룰, 현재 위치 표시, 라우터 불러오기
+
+
+
 // post 요청으로 서버에 데이터 전송할 때 쓰임
 app.use(express.urlencoded({ extended: true }));
 
@@ -119,17 +124,31 @@ app.get('/mypage', loginYes, (req, res) => {
 
 // post
 
+// 로그인하면 인증해주세요 라는 라이브러리 문법
+app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
+  res.redirect('/');
+});
+
+app.post('/join', (req, res) => {
+  db.collection('login').insertOne({ id: req.body.joinId, pw: req.body.joinPw }, (error, result) => {
+    res.redirect('/');
+  });
+})
+
 app.post('/add', (req, res, next) => {
   let todo = req.body.todo;
   let date = req.body.date;
+  let user = req.user._id;
 
   // findOne : 하나만 찾고 싶을 때 find : 전부 찾고 싶을 때
   db.collection('counter').findOne({ name: '게시물 갯수' }, (error, result) => {
     let totalPost = result.totalPost;
 
+    let save = { _id: totalPost + 1, todo: todo, date: date, user: user };
+
     // 데이터 저장 형식`
     // post : database 만들때 만든 collection 이름
-    db.collection('post').insertOne({ _id: totalPost + 1, todo: todo, date: date }, (error, result) => {
+    db.collection('post').insertOne(save, (error, result) => {
       if (error) {
         alert(error);
       } else {
@@ -149,16 +168,14 @@ app.post('/add', (req, res, next) => {
   res.redirect('/list');
 });
 
-// 로그인하면 인증해주세요 라는 라이브러리 문법
-app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
-  res.redirect('/');
-});
-
 // delete
 
 app.delete('/delete', (req, res, next) => {
   req.body._id = parseInt(req.body._id);
-  db.collection('post').deleteOne(req.body, (error, result) => {
+
+  let del = { _id: req.body._id, user: req.user._id };
+
+  db.collection('post').deleteOne(del, (error, result) => {
     res.status(200).send(); //200 - 요청 성공 400 - 요청 실패
   });
 });
